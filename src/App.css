@@ -41,6 +41,7 @@
 	font-size: 20px;
 	font-weight: 400;
 	border: none;
+	padding-left: 16px;
 }
 
 .slider {
@@ -52,6 +53,7 @@
 	margin-left: 20px;
 	font-size: 14px;
 	font-weight: 400;
+	height: 50px;
 }
 
 .chart {
@@ -81,6 +83,21 @@
 	border: none;
 	text-align: center;
 	margin-bottom: 20px;
+}
+
+.error {
+	font-size: 12px;
+	padding: 10px 0px;
+	color: red;
+}
+
+.money-sign {
+	position: relative;
+	top: 8px;
+	left: 6px;
+	font-size: 14px;
+	height: 0px;
+	color: #555555;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -124,8 +141,9 @@
 
 	.input input {
 		background-color: white;
-		margin: 0;
+		margin-left: 16px;
 		padding: 0;
+		pointer-events: none;
 	}
 	.slider {
 		margin: 0;
@@ -140,5 +158,10 @@
 	}
 	.chart h2 {
 		font-size: 16px;
+	}
+
+	.money-sign {
+		position: relative;
+		top: 7px;
 	}
 }

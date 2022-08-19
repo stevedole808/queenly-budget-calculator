@@ -2,13 +2,18 @@ import './App.css';
 import React, { useState } from 'react';
 import Slider from '@material-ui/core/Slider';
 import { withStyles } from '@material-ui/core/styles';
-import { Chart, ArcElement } from 'chart.js';
+import { Chart, ArcElement, Tooltip } from 'chart.js';
 import { Doughnut } from 'react-chartjs-2';
 
-Chart.register(ArcElement);
+Chart.register(ArcElement, Tooltip);
 
 const BudgetSlider = withStyles({
-	root: { color: '#682AEB', height: 4, width: 200, margin: '0px 10px' },
+	root: {
+		color: '#682AEB',
+		height: 4,
+		width: 200,
+		margin: '0px 20px',
+	},
 	thumb: {
 		height: 25,
 		width: 25,
@@ -18,37 +23,67 @@ const BudgetSlider = withStyles({
 	},
 	track: { height: 4, borderRadius: 4 },
 	rail: { height: 4, borderRadius: 4 },
-	// '@media only screen and (max-width: 600px)': {
-	// 	thumb: {
-	// 		top: '30%',
-	// 	},
-	// },
 })(Slider);
 
 function App() {
-	const [ticket, setTicketAmount] = useState(50);
-	const [dress, setDressAmount] = useState(150);
-	const [shoes, setShoesAmount] = useState(45);
-	const [accessories, setAccessoriesAmount] = useState(0);
-	const [nails, setNailsAmount] = useState(30);
-	const [hair, setHairAmount] = useState(30);
-	const [corsage, setCorsageAmount] = useState(30);
-	const [total, setTotal] = useState(
-		ticket + dress + shoes + accessories + nails + hair + corsage
-	);
-	const [error, setError] = useState('');
+	const [details, setDetails] = useState({
+		ticket: 50,
+		dress: 150,
+		shoes: 45,
+		accessories: 0,
+		nails: 30,
+		hair: 30,
+		corsage: 30,
+	});
 
 	const max = 200;
 	const min = 0;
 
-	console.log(total);
+	const handleChange = (e) => {
+		const name = e.target.name;
+		const element = document.getElementById(`${name}-error`);
+		const curVal = Math.max(min, Math.min(max, Number(e.target.value)));
+		const values = e.target.value;
+
+		if (values === '' || values === null) {
+			values = '';
+		}
+		if (values > 200) {
+			element.innerHTML = 'Please enter a value less than 200';
+			element.classList.add('error');
+		} else {
+			element.innerHTML = '';
+			element.classList.remove('error');
+		}
+
+		setDetails((prev) => {
+			return { ...prev, [name]: curVal };
+		});
+	};
 
 	const data = {
-		labels: ['Mon', 'Tue', 'Wed', 'Thurs', 'Fri'],
+		labels: [
+			'Ticket',
+			'Dress',
+			'Shoes',
+			'Accessories',
+			'Nails',
+			'Hair',
+			'Corsage',
+		],
+		display: false,
 		datasets: [
 			{
-				label: 'Attendance for Week 1',
-				data: [ticket, dress, shoes, accessories, nails, hair, corsage],
+				label: 'Amount of $',
+				data: [
+					details.ticket,
+					details.dress,
+					details.shoes,
+					details.accessories,
+					details.nails,
+					details.hair,
+					details.corsage,
+				],
 				borderColor: ['rgba(255,206,86,0.2)'],
 				backgroundColor: [
 					'rgba(238, 130, 238)',
@@ -56,82 +91,22 @@ function App() {
 					'rgba(54,162,235,1)',
 					'rgba(60, 179, 113)',
 					'rgba(153,102,255,1)',
-					'rgba(000,000,000,0)',
-					'rgba(0, 0, 0, 0.5)',
+					'rgba(255, 165, 0)',
+					'rgba(60, 179, 113)',
 				],
-				// pointBackgroundColor: 'rgba(255,206,86,0.2)',
+				pointBackgroundColor: 'rgba(255,206,86,0.2)',
 			},
 		],
 	};
 
-	const options = {
-		plugins: {
-			title: {
-				display: true,
-				text: 'Doughnut Chart',
-				color: 'blue',
-				font: {
-					size: 34,
-				},
-				padding: {
-					top: 30,
-					bottom: 30,
-				},
-				responsive: true,
-				animation: {
-					animateScale: true,
-				},
-			},
-		},
-	};
-
 	const totalAmount =
-		ticket + dress + shoes + accessories + nails + hair + corsage;
-	// const handleSliderChange = (e, value) => {
-	// 	setTicketAmount(value);
-	// };
-
-	// const handleInputChange = (e, value) => {
-	// 	setTicketAmount(e.target.value === '' ? '' : Number(e.target.value));
-	// };
-
-	const target = (e) => (e.target.value === '' ? '' : Number(e.target.value));
-	const ticketDiv = document.querySelector('.input');
-
-	console.log(ticketDiv);
-
-	// const handleChange = (e) => {
-	// 	let value = Math.max(min, Math.min(max, Number(e.target.value)));
-	// 	if (e.target.value === '') {
-	// 		e.target.value = '';
-	// 	} else {
-	// 		e.target.value = Number(value);
-	// 	}
-	// 	setTicketAmount(value);
-	// };
-
-	const handleChange = (e) => {
-		let html = '<div className="error" >yes</div>';
-		let value = Math.max(min, Math.min(max, Number(e.target.value)));
-		console.log(e.target.value);
-		if (e.target.value === '') {
-			e.target.value = '';
-		} else {
-			if (e.target.value > 200) {
-				ticketDiv.innerHTML += html;
-			}
-			e.target.value = Number(value);
-		}
-		setTicketAmount(value);
-	};
-
-	// const validate = (values) => {
-	// 	const errors = {};
-	// 	const regex = /[^0-9.]/g;
-
-	// 	if (values > 200 || values < 1) {
-	// 	}
-	// };
+		details.ticket +
+		details.dress +
+		details.shoes +
+		details.accessories +
+		details.nails +
+		details.hair +
+		details.corsage;
 
 	return (
 		<div className='App'>
@@ -139,24 +114,26 @@ function App() {
 				<div className='budgetCal'>
 					<h1>Homecoming Budget Calculator</h1>
 					<div className='input-container'>
-						<div className='input ticket'>
+						<div className='input'>
 							<h2>Ticket (Football Game & Dance)</h2>
+							<div className='money-sign'>$</div>
 							<input
-								value={ticket}
-								// defaultValue={ticket}
+								name='ticket'
 								type='number'
-								className='value'
+								value={details.ticket}
 								onChange={handleChange}
 							></input>
+							<div id='ticket-error' />
 						</div>
 						<div className='slider'>
 							$0
 							<BudgetSlider
-								value={ticket}
-								onChange={(e, value) => {
-									setTicketAmount(value);
-								}}
-								defaultValue={ticket}
+								value={details.ticket}
+								onChange={(e, value) =>
+									setDetails((prev) => {
+										return { ...prev, ticket: value };
+									})
+								}
 								max={max}
 							/>
 							$200
@@ -165,19 +142,25 @@ function App() {
 					<div className='input-container'>
 						<div className='input'>
 							<h2>HOCO Dress</h2>
+							<span className='money-sign'>$</span>
 							<input
-								value={dress}
-								onChange={(e, value) => {
-									setDressAmount(target(e));
-								}}
-							/>
+								name='dress'
+								type='number'
+								value={details.dress}
+								onChange={handleChange}
+							></input>
+							<div id='dress-error'></div>
 						</div>
 						<div className='slider'>
 							$0
 							<BudgetSlider
-								value={dress}
-								onChange={(e, value) => setDressAmount(value)}
-								defaultValue={dress}
+								value={details.dress}
+								onChange={(e, value) =>
+									setDetails((prev) => {
+										return { ...prev, dress: value };
+									})
+								}
+								defaultValue={details.dress}
 								max={max}
 							/>
 							$200
@@ -186,20 +169,26 @@ function App() {
 					<div className='input-container'>
 						<div className='input'>
 							<h2>Shoes</h2>
+							<span className='money-sign'>$</span>
 							<input
-								value={shoes}
-								onChange={(e, value) => {
-									setShoesAmount(target(e));
-								}}
-							/>
+								name='shoes'
+								type='number'
+								value={details.shoes}
+								onChange={handleChange}
+							></input>
+							<div id='shoes-error'></div>
 						</div>
 						<div className='slider'>
 							$0
 							<BudgetSlider
-								value={shoes}
-								defaultValue={shoes}
+								value={details.shoes}
+								defaultValue={details.shoes}
 								max={max}
-								onChange={(e, value) => setShoesAmount(value)}
+								onChange={(e, value) =>
+									setDetails((prev) => {
+										return { ...prev, shoes: value };
+									})
+								}
 							/>
 							$200
 						</div>
@@ -207,19 +196,25 @@ function App() {
 					<div className='input-container'>
 						<div className='input'>
 							<h2>Accessories (Jewelry/Purse)</h2>
+							<span className='money-sign'>$</span>
 							<input
-								value={accessories}
-								onChange={(e, value) => setAccessoriesAmount(target(e))}
-							/>
+								name='accessories'
+								type='number'
+								value={details.accessories}
+								onChange={handleChange}
+							></input>
+							<div id='accessories-error'></div>
 						</div>
 						<div className='slider'>
 							$0
 							<BudgetSlider
-								value={accessories}
-								onChange={(e, value) => {
-									setAccessoriesAmount(value);
-								}}
-								defaultValue={accessories}
+								value={details.accessories}
+								onChange={(e, value) =>
+									setDetails((prev) => {
+										return { ...prev, accessories: value };
+									})
+								}
+								defaultValue={details.accessories}
 								max={max}
 							/>
 							$200
@@ -228,19 +223,25 @@ function App() {
 					<div className='input-container'>
 						<div className='input'>
 							<h2>Nails</h2>
+							<span className='money-sign'>$</span>
 							<input
-								value={nails}
-								onChange={(e, value) => setNailsAmount(target(e))}
-							/>
+								name='nails'
+								type='number'
+								value={details.nails}
+								onChange={handleChange}
+							></input>
+							<div id='nails-error'></div>
 						</div>
 						<div className='slider'>
 							$0
 							<BudgetSlider
-								value={nails}
-								onChange={(e, value) => {
-									setNailsAmount(value);
-								}}
-								defaultValue={nails}
+								value={details.nails}
+								onChange={(e, value) =>
+									setDetails((prev) => {
+										return { ...prev, nails: value };
+									})
+								}
+								defaultValue={details.nails}
 								max={max}
 							/>
 							$200
@@ -249,19 +250,25 @@ function App() {
 					<div className='input-container'>
 						<div className='input'>
 							<h2>Hair/Makeup</h2>
+							<span className='money-sign'>$</span>
 							<input
-								value={hair}
-								onChange={(e, value) => setHairAmount(target(e))}
-							/>
+								name='hair'
+								type='number'
+								value={details.hair}
+								onChange={handleChange}
+							></input>
+							<div id='hair-error'></div>
 						</div>
 						<div className='slider'>
 							$0
 							<BudgetSlider
-								value={hair}
-								onChange={(e, value) => {
-									setHairAmount(value);
-								}}
-								defaultValue={hair}
+								value={details.hair}
+								onChange={(e, value) =>
+									setDetails((prev) => {
+										return { ...prev, hair: value };
+									})
+								}
+								defaultValue={details.hair}
 								max={max}
 							/>
 							$200
@@ -270,19 +277,25 @@ function App() {
 					<div className='input-container'>
 						<div className='input'>
 							<h2>Corsage & Boutonniere</h2>
+							<span className='money-sign'>$</span>
 							<input
-								value={corsage}
-								onChange={(e, value) => setCorsageAmount(target(e))}
-							/>
+								name='corsage'
+								type='number'
+								value={details.corsage}
+								onChange={handleChange}
+							></input>
+							<div id='corsage-error'></div>
 						</div>
 						<div className='slider'>
 							$0
 							<BudgetSlider
-								value={corsage}
-								onChange={(e, value) => {
-									setCorsageAmount(value);
-								}}
-								defaultValue={corsage}
+								value={details.corsage}
+								onChange={(e, value) =>
+									setDetails((prev) => {
+										return { ...prev, corsage: value };
+									})
+								}
+								defaultValue={details.corsage}
 								max={max}
 							/>
 							$200
@@ -293,7 +306,7 @@ function App() {
 					<h2>Your total expenses for homecoming</h2>
 					<div className='doughnut-chart'>
 						<span>${totalAmount}</span>
-						<Doughnut data={data} options={options} />
+						<Doughnut data={data} />
 					</div>
 				</div>
 			</div>
